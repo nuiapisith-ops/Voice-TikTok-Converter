@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XPO ↔ TikTok Spend Converter</title>
+<style>
+  :root{
+    --bg:#0f1714; --panel:#16201c; --panel-2:#1c2823; --line:#2a3a33;
+    --sand:#d8c4a0; --sand-dim:#a89878; --teal:#5fb89a; --teal-dim:#3a7d68;
+    --text:#e8ede9; --text-dim:#8fa39a; --amber:#d9a24e; --amber-bg:#2a2114;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:
+      radial-gradient(circle at 80% -10%, rgba(95,184,154,.08), transparent 45%),
+      radial-gradient(circle at 0% 100%, rgba(216,196,160,.05), transparent 40%),
+      var(--bg);
+    color:var(--text); line-height:1.5; padding:32px 20px 80px; min-height:100vh;
+  }
+  .wrap{max-width:560px;margin:0 auto}
+  .head{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:28px}
+  .kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:10px}
+  h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:28px;color:var(--sand);margin-bottom:6px}
+  .sub{color:var(--text-dim);font-size:14px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px}
+
+  .field{margin-bottom:18px}
+  .field:last-child{margin-bottom:0}
+  .label{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .label .name{font-size:13px;font-weight:600;color:var(--text)}
+  .label .unit{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sand-dim)}
+  .label .unit.thb{color:var(--teal)}
+  input[type=number]{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+    color:var(--text);font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:22px;
+    padding:13px 14px;outline:none;transition:border .15s;
+  }
+  input[type=number]:focus{border-color:var(--teal-dim)}
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+  .swap{display:flex;justify-content:center;margin:-6px 0 12px}
+  .swap span{font-size:18px;color:var(--teal-dim)}
+
+  .rates{background:linear-gradient(180deg,var(--amber-bg),var(--panel));border:1px solid #46381f;border-radius:14px;padding:20px 24px}
+  .rates h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:14px}
+  .rrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid rgba(70,56,31,.5)}
+  .rrow:last-child{border-bottom:none}
+  .rrow .rname{font-size:13px;color:var(--text-dim)}
+  .rrow input{
+    width:120px;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;
+    color:var(--sand);font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:14px;
+    padding:7px 9px;outline:none;text-align:right;
+  }
+  .rrow input:focus{border-color:var(--teal-dim)}
+  .rrow.combined{margin-top:6px;padding-top:14px;border-top:1px solid #46381f}
+  .rrow.combined .rname{color:var(--sand);font-weight:600;font-size:14px}
+  .rrow.combined .rval{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;color:var(--teal)}
+
+  .reset{background:transparent;border:1px solid var(--teal-dim);color:var(--teal);font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;margin-top:14px;transition:all .15s}
+  .reset:hover{background:var(--teal-dim);color:#06120d}
+  .foot{font-size:12px;color:var(--text-dim);text-align:center;margin-top:18px}
+  .foot b{color:var(--sand-dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="kicker">WCL · DSP Reconcile</div>
+    <h1>XPO ↔ TikTok Converter</h1>
+    <p class="sub">แปลงยอด spend ระหว่าง XPO (USD) กับ TikTok Ads Manager (THB) · พิมพ์ช่องไหนก็ได้ อีกช่องจะคำนวณให้</p>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <div class="label"><span class="name">XPO Spending</span><span class="unit">USD</span></div>
+      <input type="number" id="xpo" value="103.75" step="0.01">
+    </div>
+    <div class="swap"><span>⇅</span></div>
+    <div class="field">
+      <div class="label"><span class="name">TikTok Ads Manager</span><span class="unit thb">THB</span></div>
+      <input type="number" id="tiktok" value="2210.31" step="0.01">
+    </div>
+  </div>
+
+  <div class="rates">
+    <h3>Rate Settings</h3>
+    <div class="rrow">
+      <span class="rname">Multiplier (TikTok = XPO ×)</span>
+      <input type="number" id="mult" value="0.55" step="0.0001">
+    </div>
+    <div class="rrow">
+      <span class="rname">FX (THB / USD)</span>
+      <input type="number" id="fx" value="38.735" step="0.001">
+    </div>
+    <div class="rrow combined">
+      <span class="rname">Combined rate (THB / XPO-USD)</span>
+      <span class="rval" id="combined">21.3042</span>
+    </div>
+    <button class="reset" id="reset">Reset to baseline</button>
+  </div>
+
+  <p class="foot">Baseline จากยอดจริง <b>XPO 103.75 → TikTok 2,210.31</b> · combined = multiplier × FX</p>
+</div>
+
+<script>
+  const xpo = document.getElementById('xpo');
+  const tiktok = document.getElementById('tiktok');
+  const mult = document.getElementById('mult');
+  const fx = document.getElementById('fx');
+  const combined = document.getElementById('combined');
+
+  const BASE = { xpo:103.75, tiktok:2210.31, mult:0.55, fx:38.735 };
+  let lastEdited = 'xpo';
+
+  function rate(){ return (parseFloat(mult.value)||0) * (parseFloat(fx.value)||0); }
+
+  function refresh(){
+    const r = rate();
+    combined.textContent = r.toFixed(4);
+    if(lastEdited === 'tiktok'){
+      const v = parseFloat(tiktok.value);
+      if(!isNaN(v) && r) xpo.value = (v / r).toFixed(2);
+    } else {
+      const v = parseFloat(xpo.value);
+      if(!isNaN(v)) tiktok.value = (v * r).toFixed(2);
+    }
+  }
+
+  xpo.addEventListener('input', ()=>{ lastEdited='xpo'; refresh(); });
+  tiktok.addEventListener('input', ()=>{ lastEdited='tiktok'; refresh(); });
+  mult.addEventListener('input', refresh);
+  fx.addEventListener('input', refresh);
+
+  document.getElementById('reset').addEventListener('click', ()=>{
+    xpo.value=BASE.xpo; tiktok.value=BASE.tiktok; mult.value=BASE.mult; fx.value=BASE.fx;
+    lastEdited='xpo'; refresh();
+  });
+
+  refresh();
+</script>
+</body>
+</html>
